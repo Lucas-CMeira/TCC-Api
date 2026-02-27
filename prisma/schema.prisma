@@ -13,42 +13,74 @@ datasource db {
   provider = "postgresql"
 }
 
+enum EntryType {
+  income
+  expenses
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
-  createdAt DateTime @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  entries    Entry[]
+  categories Category[]
+  goals      Goal[]
 
   @@map("user")
 }
 
-/**
- * 2-	lancamento:
- * •	id: int;
- * •	titulo: varchar;
- * •	descricao?: varchar;
- * •	valor: int;
- * •	tipo: enum(“despesa”, “receita”);
- * •	data: timestamp;
- * •	cadastrado_em: timestamp;
- * •	usuario_id: int;
- * •	meta_id?: int;
- * •	categoria_id?: int;
- * 3-	categoria:
- * •	id: int;
- * •	nome: varchar;
- * •	descrição?: varchar;
- * •	cor?: char(6);
- * •	icone?: varchar;
- * •	cadastrado_em: timestamp;
- * •	usuario_id: int;
- * 4-	meta:
- * •	id: int;
- * •	titulo: varchar;
- * •	descrição?: varchar;
- * •	valor: int;
- * •	data_limite?: timestamp;
- * •	cadastrado_em: timestamp;
- * •	usuário_id: int;
- */
+model Entry {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  value       Int
+  type        EntryType
+  date        DateTime
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  categoryId String   @map("categor_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  goalId String? @map("goal_id")
+  goal   Goal?   @relation(fields: [goalId], references: [id])
+
+  @@map("entry")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  color       String?  @db.Char(6)
+  // icon String?  Fezin ira analisar as condições
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  entries Entry[]
+
+  @@map("category")
+}
+
+model Goal {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  value       Int
+  limitDate   DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  entries Entry[]
+
+  @@map("goal")
+}
