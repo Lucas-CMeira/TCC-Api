@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^25.3.0",
     "prisma": "^7.4.1",
     "tsup": "^8.5.1",
