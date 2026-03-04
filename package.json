@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^25.3.0",
     "prisma": "^7.4.1",
     "tsup": "^8.5.1",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "@prisma/client": "^7.4.1",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.3.1",
     "fastify": "^5.7.4"
   }
