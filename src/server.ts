@@ -16,6 +16,7 @@ async function start(){
     }).catch((e: any) => {
         console.log("Erro na hora de subir")
         console.log(e)
+        console.log("legal!")
     })
 }
 
