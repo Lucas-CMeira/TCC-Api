@@ -5,7 +5,7 @@ const Prisma = new PrismaClient()
 export class AuthRepository {
 
     async findByEmail(email:string) {
-        return Prisma.user.findUnique({
+        return await Prisma.user.findUnique({
             where: email
         })
     }
@@ -15,8 +15,9 @@ export class AuthRepository {
         email: string
         password: string
     }) {
-        return Prisma.user.create
-        data
+        return await Prisma.user.create({
+            data
+        })
     }
 
 }
