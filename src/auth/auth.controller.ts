@@ -20,4 +20,22 @@
  volta no fim do ciclo para dar tchau (feedback de resposta)
 
 */
+import {FastifyRequest, FastifyReply} from "fastify"
+import { AuthService } from "./auth.service"
+export class AuthController {
 
+    constructor(private authService : AuthService){
+        
+    }
+
+    async register (request: FastifyRequest, reply: FastifyReply) {
+        const {name, email , password } = request.body as {
+            name: string
+            email: string
+            password: string
+        }
+        const result = await this.authService.register(name, email, password)
+
+        return reply.status(201).send(result)
+    }
+}

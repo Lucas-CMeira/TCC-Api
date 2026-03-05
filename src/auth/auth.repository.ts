@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client/extension"
 
-const Prisma = new PrismaClient()
+const prisma = new PrismaClient()
 
 export class AuthRepository {
 
     async findByEmail(email:string) {
-        return await Prisma.user.findUnique({
-            where: email
+        return await prisma.user.findUnique({
+            where: {email}
         })
     }
 
@@ -15,7 +15,7 @@ export class AuthRepository {
         email: string
         password: string
     }) {
-        return await Prisma.user.create({
+        return await prisma.user.create({
             data
         })
     }

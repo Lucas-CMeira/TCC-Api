@@ -7,10 +7,8 @@ import bcrypt from 'bcrypt'
 import { AuthRepository } from './auth.repository';
 export class AuthService {
 
-    private authRepository: AuthRepository
-    
-    constructor() {
-        this.authRepository = new AuthRepository()
+    constructor(private authRepository: AuthRepository){
+        
     }
 
     async register(name: string, email: string, password: string){
