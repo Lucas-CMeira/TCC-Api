@@ -9,7 +9,7 @@ import { AuthService } from "./auth.service";
 
 export class AuthModule{
 
-    private authController: AuthController
+    public authController: AuthController
     private authService : AuthService
     private authRepository : AuthRepository
 
