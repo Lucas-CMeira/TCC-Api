@@ -25,8 +25,10 @@ import { AuthService } from "./auth.service"
 export class AuthController {
 
     constructor(private authService : AuthService){
-        
+
     }
+
+    // Recebe as requisições do front e chama o authService para registrar um usuário
 
     async register (request: FastifyRequest, reply: FastifyReply) {
         const {name, email , password } = request.body as {
