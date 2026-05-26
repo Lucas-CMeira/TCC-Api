@@ -40,4 +40,16 @@ export class AuthController {
 
         return reply.status(201).send(result)
     }
+
+    async login(request: FastifyRequest, reply: FastifyReply) {
+
+    const { email, password } = request.body as {
+        email: string
+        password: string
+    }
+
+    const result = await this.authService.login(email, password)
+
+    return reply.status(200).send(result)
+}
 }

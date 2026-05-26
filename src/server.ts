@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import buildApp from "./bootstrap";
 
 async function start(){
@@ -16,7 +17,6 @@ async function start(){
     }).catch((e: any) => {
         console.log("Erro na hora de subir")
         console.log(e)
-        console.log("legal!")
     })
 }
 

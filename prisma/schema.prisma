@@ -44,7 +44,7 @@ model Entry {
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
 
-  categoryId String   @map("categor_id")
+  categoryId String   @map("category_id")
   category   Category @relation(fields: [categoryId], references: [id])
 
   goalId String? @map("goal_id")
@@ -55,7 +55,7 @@ model Entry {
 
 model Category {
   id          String   @id @default(uuid())
-  name        String   @unique
+  name        String  
   description String?
   color       String?  @db.Char(6)
   // icon String?  Fezin ira analisar as condições

@@ -1,12 +1,17 @@
-import fastify from "fastify"
+import Fastify from "fastify"
+import jwt from "@fastify/jwt"
 
-import registerPluggins from "./pluggins/index"
+import { authRoutes } from "./auth/auth.routes"
 
 export default async function buildApp() {
 
-    const app = fastify()
+    const app = Fastify()
 
-    await registerPluggins()
+    app.register(jwt, {
+        secret: "granafy-secret"
+    })
+
+    app.register(authRoutes)
 
     return app
 }
