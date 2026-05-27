@@ -1,6 +1,7 @@
 
 import type { FastifyInstance } from "fastify";
 import { AuthModule } from "./auth.module";
+import { authMiddleware } from "../middlewares/auth";
 
 export async function authRoutes(app: FastifyInstance) {
 
@@ -17,4 +18,5 @@ export async function authRoutes(app: FastifyInstance) {
         "/login",
         authController.login.bind(authController)
     )
+    
 }
