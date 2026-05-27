@@ -1,4 +1,5 @@
-import { FastifyInstance } from "fastify";
+
+import type { FastifyInstance } from "fastify";
 import { AuthModule } from "./auth.module";
 
 export async function authRoutes(app: FastifyInstance) {

@@ -1,5 +1,7 @@
-import { FastifyRequest, FastifyReply } from "fastify"
+
+import type { FastifyRequestType } from "fastify/types/type-provider"
 import { AuthService } from "./auth.service"
+import type { FastifyReply, FastifyRequest } from "fastify"
 
 export class AuthController {
 

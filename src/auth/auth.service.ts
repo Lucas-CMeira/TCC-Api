@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt'
-import { AuthRepository } from './auth.repository';
-import { FastifyInstance } from 'fastify';
-import { use } from 'react';
+import { AuthRepository } from './auth.repository'
+import type { FastifyInstance } from 'fastify';
 
 
 export class AuthService {
@@ -43,14 +42,14 @@ export class AuthService {
         const user = await this.authRepository.findByEmail(email);
 
         if (!user) {
-            throw new Error("Usuario não encontrado!")
+            throw new Error("Credenciais Inválidas!")
         };
         const passwordMatch = await bcrypt.compare(
             password,
             user.password
         );
         if (!passwordMatch) {
-            throw new Error("Senha incorreta");
+            throw new Error("Credenciais Inválidas! ");
         };
         const token = this.app.jwt.sign({
             sub: user.id,

@@ -2,8 +2,8 @@
     é um arquivo responsavel por gerenciar as camadas: controller, repository e service
 */
 
-import { FastifyInstance } from "fastify";
 
+import type { FastifyInstance } from "fastify";
 import { AuthController } from "./auth.controller";
 import { AuthRepository } from "./auth.repository";
 import { AuthService } from "./auth.service";

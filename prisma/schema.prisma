@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -55,7 +54,7 @@ model Entry {
 
 model Category {
   id          String   @id @default(uuid())
-  name        String  
+  name        String
   description String?
   color       String?  @db.Char(6)
   // icon String?  Fezin ira analisar as condições
