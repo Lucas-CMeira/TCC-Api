@@ -1,11 +1,9 @@
-
-import type { FastifyRequestType } from "fastify/types/type-provider"
 import { AuthService } from "./auth.service"
 import type { FastifyReply, FastifyRequest } from "fastify"
 
 export class AuthController {
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService) { }
 
     // Cadastro
     async register(request: FastifyRequest, reply: FastifyReply) {
@@ -50,7 +48,16 @@ export class AuthController {
                 password
             )
 
-            return reply.status(200).send(result)
+            reply.setCookie("token", result.token, {
+                httpOnly: true,
+                secure: false, // localhost
+                sameSite: "lax",
+                path: "/"
+            })
+
+            return reply.status(200).send({
+                user: result.user
+            })
 
         } catch (error: any) {
 
@@ -58,6 +65,18 @@ export class AuthController {
                 message: error.message
             })
 
+        }
+    }
+
+    async me(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            await request.jwtVerify();
+
+            return reply.send(request.user);
+        } catch {
+            return reply.status(401).send({
+                message: "Não autenticado"
+            });
         }
     }
 }

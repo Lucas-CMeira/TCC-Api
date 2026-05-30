@@ -18,5 +18,15 @@ export async function authRoutes(app: FastifyInstance) {
         "/login",
         authController.login.bind(authController)
     )
-    
+
+    app.get(
+        "/me",
+        {
+            preHandler: async (request) => {
+                await request.jwtVerify()
+            }
+        },
+        authController.me.bind(authController)
+    )
+
 }

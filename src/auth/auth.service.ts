@@ -11,55 +11,66 @@ export class AuthService {
 
     async register(name: string, email: string, password: string) {
 
-        // Verifição de email (existente ou não)
-        const userAlreadyExists = await this.authRepository.findByEmail(email)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (userAlreadyExists) {
-            throw new Error("Email ja está em uso!");
+        if (!emailRegex.test(email)) {
+            throw new Error("Email inválido");
         }
 
-        // Cripitografar senha
+        const userAlreadyExists =
+            await this.authRepository.findByEmail(email);
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        if (userAlreadyExists) {
+            throw new Error("Email já está em uso!");
+        }
 
-        // Criar usuário
+        const hashedPassword =
+            await bcrypt.hash(password, 10);
 
-        const user = await this.authRepository.create({
-            name,
-            email,
-            password: hashedPassword
-        })
+        const user =
+            await this.authRepository.create({
+                name,
+                email,
+                password: hashedPassword
+            });
 
         return {
             id: user.id,
             name: user.name,
-            email: user.email,
-        }
-
-    }
+            email: user.email
+        };
+    }   
     async login(email: string, password: string) {
 
         const user = await this.authRepository.findByEmail(email);
 
         if (!user) {
             throw new Error("Credenciais Inválidas!")
-        };
+        }
+
         const passwordMatch = await bcrypt.compare(
             password,
             user.password
         );
+
         if (!passwordMatch) {
-            throw new Error("Credenciais Inválidas! ");
-        };
+            throw new Error("Credenciais Inválidas!")
+        }
+
         const token = this.app.jwt.sign({
             sub: user.id,
             name: user.name,
             email: user.email
-        })
+        });
 
         return {
-            token
-        }
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        };
     }
 
 }
