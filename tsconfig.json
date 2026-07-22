@@ -8,6 +8,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "es2022",
+    "moduleResolution": "node",
     "target": "esnext",
     "types": [],
     "typeRoots": ["./node_modules/@types", "./src/@types"],
