@@ -46,8 +46,10 @@ export class GoalsService {
         }
 
         // Calcula o saldo total acumulado atrelado a esta meta
+        // Entry.value é Int (centavos * 100) no Prisma, então totalSaved precisa ser Int
         const entries = (goal as any).entries || [];
         const totalSaved = entries.reduce((acc: number, entry: any) => acc + Math.abs(Number(entry.value)), 0);
+        const totalSavedInt = Math.round(totalSaved); // Garante Int para o Prisma
 
         // Se houver saldo guardado na meta, cria um lançamento de receita para devolver o dinheiro ao saldo do usuário
         if (totalSaved > 0) {
@@ -71,7 +73,7 @@ export class GoalsService {
                 data: {
                     title: `Devolução da Meta: ${goal.title}`,
                     description: `Devolução automática do saldo acumulado da meta excluída "${goal.title}"`,
-                    value: Math.round(totalSaved),
+                    value: totalSavedInt,
                     type: "income",
                     date: new Date(),
                     userId,
