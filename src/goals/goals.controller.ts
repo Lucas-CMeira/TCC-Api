@@ -1,3 +1,5 @@
+// Controller de metas: recebe as requisições HTTP e delega ao serviço.
+
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { GoalsService } from "./goals.service"
 
@@ -18,10 +20,10 @@ export class GoalsController {
             }
 
             const goal = await this.goalsService.createGoal(
-                title, 
-                description, 
-                value, 
-                new Date(limitDate), 
+                title,
+                description,
+                value,
+                new Date(limitDate),
                 userId
             );
 
@@ -63,7 +65,6 @@ export class GoalsController {
                 limitDate?: string
             }
 
-            // Monta apenas os campos enviados (evita undefined em exactOptionalPropertyTypes)
             const data: { title?: string; description?: string; value?: number; limitDate?: string } = {};
             if (body.title !== undefined) data.title = body.title;
             if (body.description !== undefined) data.description = body.description;

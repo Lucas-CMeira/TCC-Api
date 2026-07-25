@@ -1,3 +1,5 @@
+// Repositório de metas: operações CRUD no banco via Prisma, incluindo lançamentos atrelados.
+
 import { prisma } from "../pluggins/prisma"
 
 export class GoalsRepository {
@@ -9,7 +11,6 @@ export class GoalsRepository {
     }
 
     async findAllByUserId(userId: string) {
-        // Incluindo as entradas atreladas para calcular progresso no frontend se necessário
         return await prisma.goal.findMany({
             where: { userId },
             include: {

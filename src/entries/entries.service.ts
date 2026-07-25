@@ -1,3 +1,5 @@
+// Serviço de lançamentos: criação, listagem com sincronização de fixos mensais, atualização e exclusão.
+
 import { EntriesRepository } from "./entries.repository"
 import { EntryType } from "@prisma/client"
 
@@ -6,13 +8,13 @@ export class EntriesService {
     constructor(private entriesRepository: EntriesRepository) { }
 
     async createEntry(
-        title: string, 
-        description: string | undefined, 
-        value: number, 
-        type: string, 
-        date: Date, 
-        userId: string, 
-        categoryId: string, 
+        title: string,
+        description: string | undefined,
+        value: number,
+        type: string,
+        date: Date,
+        userId: string,
+        categoryId: string,
         goalId: string | undefined,
         isFixed: boolean = false,
         fixedDay: number | undefined = undefined,
@@ -44,53 +46,55 @@ export class EntriesService {
     }
 
     async getEntries(userId: string) {
-        // 1. Sincronizar as entradas fixas para o mês atual
         const fixedEntries = await this.entriesRepository.findFixedEntries(userId);
         const now = new Date();
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth(); // 0 a 11
+        const currentYear = now.getUTCFullYear();
+        const currentMonth = now.getUTCMonth();
 
         for (const fixed of fixedEntries) {
-            // Verifica se a entrada original foi criada em um mês futuro
             const fixedEntryDate = new Date(fixed.date);
-            if (fixedEntryDate.getFullYear() > currentYear || (fixedEntryDate.getFullYear() === currentYear && fixedEntryDate.getMonth() > currentMonth)) {
-                continue; // Não gerar se a data de início for futura
-            }
+            const startYear = fixedEntryDate.getUTCFullYear();
+            const startMonth = fixedEntryDate.getUTCMonth();
 
-            // O dia da repetição é o fixedDay, ou o dia da data original
-            const dayToUse = fixed.fixedDay || fixedEntryDate.getDate();
-            
-            // Verifica se já existe uma ocorrência desse lançamento no mês atual
-            const exists = await this.entriesRepository.checkOccurrenceExists(fixed.id, currentYear, currentMonth);
+            const dayToUse = fixed.fixedDay || fixedEntryDate.getUTCDate();
 
-            if (!exists) {
-                // Descobre a nova data para essa repetição (trata dias como 31 em meses que só tem 30)
-                // Usa UTC para evitar bug de fuso horário (GMT-3 subtrairia 3h e voltaria 1 dia)
-                let newDate = new Date(Date.UTC(currentYear, currentMonth, dayToUse));
-                // Se o dia transbordou para o mês seguinte (ex: dia 31 em fevereiro), usa o último dia do mês
-                if (newDate.getUTCMonth() !== currentMonth) {
-                    newDate = new Date(Date.UTC(currentYear, currentMonth + 1, 0));
+            const totalMonths = (currentYear - startYear) * 12 + (currentMonth - startMonth) + 2;
+
+            for (let i = 0; i < totalMonths; i++) {
+                const targetDate = new Date(Date.UTC(startYear, startMonth + i, 1));
+                const targetYear = targetDate.getUTCFullYear();
+                const targetMonth = targetDate.getUTCMonth();
+
+                if (i === 0 && targetYear === startYear && targetMonth === startMonth) {
+                    continue;
                 }
 
-                // Cria o lançamento duplicado
-                await this.createEntry(
-                    fixed.title,
-                    fixed.description || undefined,
-                    fixed.value,
-                    fixed.type,
-                    newDate,
-                    userId,
-                    fixed.categoryId!,
-                    fixed.goalId || undefined,
-                    false, // a ocorrência não é fixa, apenas o template
-                    undefined,
-                    fixed.id // aponta para o original
-                );
+                const exists = await this.entriesRepository.checkOccurrenceExists(fixed.id, targetYear, targetMonth);
+
+                if (!exists) {
+                    let newDate = new Date(Date.UTC(targetYear, targetMonth, dayToUse));
+                    if (newDate.getUTCMonth() !== targetMonth) {
+                        newDate = new Date(Date.UTC(targetYear, targetMonth + 1, 0));
+                    }
+
+                    await this.createEntry(
+                        fixed.title,
+                        fixed.description || undefined,
+                        fixed.value,
+                        fixed.type,
+                        newDate,
+                        userId,
+                        fixed.categoryId!,
+                        fixed.goalId || undefined,
+                        false,
+                        undefined,
+                        fixed.id
+                    );
+                }
             }
         }
 
-        // 2. Retornar todos os lançamentos
-        return await this.entriesRepository.findAllByUserId(userId)
+        return await this.entriesRepository.findAllByUserId(userId);
     }
 
     async updateEntry(
@@ -111,6 +115,10 @@ export class EntriesService {
         const entry = await this.entriesRepository.findById(id, userId);
         if (!entry) {
             throw new Error("Lançamento não encontrado ou sem permissão");
+        }
+
+        if (data.isFixed === false && (entry as any).isFixed === true) {
+            await this.entriesRepository.deleteChildEntries(id);
         }
 
         const updatePayload: any = {};
@@ -137,6 +145,11 @@ export class EntriesService {
         if (!entry) {
             throw new Error("Lançamento não encontrado ou sem permissão");
         }
+
+        if ((entry as any).isFixed) {
+            await this.entriesRepository.deleteChildEntries(id);
+        }
+
         return await this.entriesRepository.delete(id, userId);
     }
 }

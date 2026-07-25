@@ -1,16 +1,18 @@
+// Repositório de lançamentos: operações CRUD e consultas específicas no banco via Prisma.
+
 import { prisma } from "../pluggins/prisma"
 import { EntryType } from "@prisma/client"
 
 export class EntriesRepository {
 
-    async create(data: { 
-        title: string, 
-        description?: string, 
-        value: number, 
-        type: EntryType, 
-        date: Date, 
-        userId: string, 
-        categoryId: string, 
+    async create(data: {
+        title: string,
+        description?: string,
+        value: number,
+        type: EntryType,
+        date: Date,
+        userId: string,
+        categoryId: string,
         goalId?: string,
         isFixed?: boolean,
         fixedDay?: number,
@@ -28,9 +30,8 @@ export class EntriesRepository {
     }
 
     async checkOccurrenceExists(parentId: string, year: number, month: number) {
-        // Mês começa no 0 em JS Date, mas no banco vamos usar intervalo
-        const startDate = new Date(year, month, 1);
-        const endDate = new Date(year, month + 1, 0, 23, 59, 59);
+        const startDate = new Date(Date.UTC(year, month, 1));
+        const endDate = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59));
 
         const existing = await prisma.entry.findFirst({
             where: {
@@ -69,6 +70,12 @@ export class EntriesRepository {
                 category: true,
                 goal: true
             }
+        })
+    }
+
+    async deleteChildEntries(parentId: string) {
+        return await prisma.entry.deleteMany({
+            where: { parentId }
         })
     }
 

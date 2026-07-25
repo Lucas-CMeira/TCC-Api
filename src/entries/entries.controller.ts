@@ -1,3 +1,5 @@
+// Controller de lançamentos: recebe as requisições HTTP e delega ao serviço.
+
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { EntriesService } from "./entries.service"
 
@@ -23,13 +25,13 @@ export class EntriesController {
             }
 
             const entry = await this.entriesService.createEntry(
-                title, 
-                description, 
-                value, 
-                type, 
-                new Date(date), 
-                userId, 
-                categoryId, 
+                title,
+                description,
+                value,
+                type,
+                new Date(date),
+                userId,
+                categoryId,
                 goalId,
                 isFixed,
                 fixedDay
